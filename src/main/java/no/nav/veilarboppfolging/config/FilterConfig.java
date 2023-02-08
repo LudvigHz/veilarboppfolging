@@ -3,11 +3,11 @@ package no.nav.veilarboppfolging.config;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.common.auth.context.UserRole;
 import no.nav.common.auth.oidc.filter.AzureAdUserRoleResolver;
-import no.nav.common.auth.oidc.filter.OidcAuthenticationFilter;
-import no.nav.common.auth.oidc.filter.OidcAuthenticatorConfig;
-import no.nav.common.rest.filter.ConsumerIdComplianceFilter;
-import no.nav.common.rest.filter.LogRequestFilter;
-import no.nav.common.rest.filter.SetStandardHttpHeadersFilter;
+import no.nav.common.auth.oidc.filter.JavaxOidcAuthenticationFilter;
+import no.nav.common.auth.oidc.filter.JavaxOidcAuthenticatorConfig;
+import no.nav.common.rest.filter.JavaxConsumerIdComplianceFilter;
+import no.nav.common.rest.filter.JavaxLogRequestFilter;
+import no.nav.common.rest.filter.JavaxSetStandardHttpHeadersFilter;
 import no.nav.veilarboppfolging.utils.PingFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 import static no.nav.common.auth.Constants.AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME;
-import static no.nav.common.auth.oidc.filter.OidcAuthenticator.fromConfigs;
+import static no.nav.common.auth.oidc.filter.JavaxOidcAuthenticator.fromConfigs;
 import static no.nav.common.utils.EnvironmentUtils.isDevelopment;
 import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 import static no.nav.veilarboppfolging.controller.AdminController.PTO_ADMIN_SERVICE_USER;
@@ -30,30 +30,30 @@ public class FilterConfig {
             "srvpam-cv-api", "srvveilarbvedtakss", PTO_ADMIN_SERVICE_USER
     );
 
-    private OidcAuthenticatorConfig naisStsAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
+    private JavaxOidcAuthenticatorConfig naisStsAuthConfig(EnvironmentProperties properties) {
+        return new JavaxOidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getNaisStsDiscoveryUrl())
                 .withClientIds(ALLOWED_SERVICE_USERS)
                 .withUserRole(UserRole.SYSTEM);
     }
 
-    private OidcAuthenticatorConfig tokenxAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
+    private JavaxOidcAuthenticatorConfig tokenxAuthConfig(EnvironmentProperties properties) {
+        return new JavaxOidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getTokenxDiscoveryUrl())
                 .withClientId(properties.getTokenxClientId())
                 .withUserRole(UserRole.EKSTERN);
     }
 
-    private OidcAuthenticatorConfig loginserviceIdportenConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
+    private JavaxOidcAuthenticatorConfig loginserviceIdportenConfig(EnvironmentProperties properties) {
+        return new JavaxOidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getLoginserviceIdportenDiscoveryUrl())
                 .withClientId(properties.getLoginserviceIdportenAudience())
                 .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
                 .withUserRole(UserRole.EKSTERN);
     }
 
-    private OidcAuthenticatorConfig naisAzureAdConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
+    private JavaxOidcAuthenticatorConfig naisAzureAdConfig(EnvironmentProperties properties) {
+        return new JavaxOidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getNaisAadDiscoveryUrl())
                 .withClientId(properties.getNaisAadClientId())
                 .withUserRoleResolver(new AzureAdUserRoleResolver());
@@ -72,9 +72,9 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<OidcAuthenticationFilter> authenticationFilterRegistrationBean(EnvironmentProperties properties) {
-        FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
-        OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
+    public FilterRegistrationBean<JavaxOidcAuthenticationFilter> authenticationFilterRegistrationBean(EnvironmentProperties properties) {
+        FilterRegistrationBean<JavaxOidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
+        JavaxOidcAuthenticationFilter authenticationFilter = new JavaxOidcAuthenticationFilter(
                 fromConfigs(
                         loginserviceIdportenConfig(properties),
                         naisStsAuthConfig(properties),
@@ -90,27 +90,27 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<LogRequestFilter> logFilterRegistrationBean() {
-        FilterRegistrationBean<LogRequestFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new LogRequestFilter(requireApplicationName(), isDevelopment().orElse(false)));
+    public FilterRegistrationBean<JavaxLogRequestFilter> logFilterRegistrationBean() {
+        FilterRegistrationBean<JavaxLogRequestFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new JavaxLogRequestFilter(requireApplicationName(), isDevelopment().orElse(false)));
         registration.setOrder(3);
         registration.addUrlPatterns("/*");
         return registration;
     }
 
     @Bean
-    public FilterRegistrationBean<ConsumerIdComplianceFilter> consumerIdComplianceFilterRegistrationBean() {
-        FilterRegistrationBean<ConsumerIdComplianceFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new ConsumerIdComplianceFilter(isDevelopment().orElse(false)));
+    public FilterRegistrationBean<JavaxConsumerIdComplianceFilter> consumerIdComplianceFilterRegistrationBean() {
+        FilterRegistrationBean<JavaxConsumerIdComplianceFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new JavaxConsumerIdComplianceFilter(isDevelopment().orElse(false)));
         registration.setOrder(4);
         registration.addUrlPatterns("/api/*");
         return registration;
     }
 
     @Bean
-    public FilterRegistrationBean<SetStandardHttpHeadersFilter> setStandardHeadersFilterRegistrationBean() {
-        FilterRegistrationBean<SetStandardHttpHeadersFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new SetStandardHttpHeadersFilter());
+    public FilterRegistrationBean<JavaxSetStandardHttpHeadersFilter> setStandardHeadersFilterRegistrationBean() {
+        FilterRegistrationBean<JavaxSetStandardHttpHeadersFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new JavaxSetStandardHttpHeadersFilter());
         registration.setOrder(5);
         registration.addUrlPatterns("/*");
         return registration;

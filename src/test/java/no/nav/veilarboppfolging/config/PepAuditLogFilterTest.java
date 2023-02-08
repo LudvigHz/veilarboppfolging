@@ -23,7 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static no.nav.common.abac.constants.NavAttributter.RESOURCE_VEILARB_ENHET_EIENDEL;
-import static no.nav.common.rest.filter.LogRequestFilter.NAV_CONSUMER_ID_HEADER_NAME;
+import static no.nav.common.rest.filter.JavaxLogRequestFilter.NAV_CONSUMER_ID_HEADER_NAME;
 import static no.nav.common.utils.EnvironmentUtils.NAIS_APP_NAME_PROPERTY_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

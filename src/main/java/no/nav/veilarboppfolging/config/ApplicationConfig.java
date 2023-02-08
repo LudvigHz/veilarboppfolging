@@ -6,7 +6,7 @@ import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import no.nav.common.abac.Pep;
 import no.nav.common.abac.VeilarbPepFactory;
 import no.nav.common.abac.audit.AuditLogFilterUtils;
-import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
+import no.nav.common.abac.audit.JavaxSpringAuditRequestInfoSupplier;
 import no.nav.common.abac.constants.NavAttributter;
 import no.nav.common.audit_log.log.AuditLogger;
 import no.nav.common.audit_log.log.AuditLoggerImpl;
@@ -104,7 +104,7 @@ public class ApplicationConfig {
     protected Pep veilarbPep(EnvironmentProperties properties, Credentials serviceUserCredentials) {
         return VeilarbPepFactory.get(
                 properties.getAbacUrl(), serviceUserCredentials.username,
-                serviceUserCredentials.password, new SpringAuditRequestInfoSupplier(),
+                serviceUserCredentials.password, new JavaxSpringAuditRequestInfoSupplier(),
                 AuditLogFilterUtils.not(anyResourceAttributeFilter(NavAttributter.RESOURCE_VEILARB_ENHET_EIENDEL::equals))
         );
     }
