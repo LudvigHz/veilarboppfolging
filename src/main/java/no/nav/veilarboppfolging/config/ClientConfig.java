@@ -8,17 +8,18 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
+import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarboppfolging.client.behandle_arbeidssoker.BehandleArbeidssokerClient;
 import no.nav.veilarboppfolging.client.behandle_arbeidssoker.BehandleArbeidssokerClientImpl;
+import no.nav.veilarboppfolging.client.digdir_krr.DigdirClient;
+import no.nav.veilarboppfolging.client.digdir_krr.DigdirClientImpl;
 import no.nav.veilarboppfolging.client.veilarbarena.VeilarbarenaClient;
 import no.nav.veilarboppfolging.client.veilarbarena.VeilarbarenaClientImpl;
 import no.nav.veilarboppfolging.client.ytelseskontrakt.YtelseskontraktClient;
 import no.nav.veilarboppfolging.client.ytelseskontrakt.YtelseskontraktClientImpl;
-import no.nav.veilarboppfolging.client.digdir_krr.DigdirClient;
-import no.nav.veilarboppfolging.client.digdir_krr.DigdirClientImpl;
 import no.nav.veilarboppfolging.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,8 +53,9 @@ public class ClientConfig {
     }
 
     @Bean
-    public DigdirClient digdirClient(EnvironmentProperties properties, AuthService authService) {
-        return new DigdirClientImpl(properties.getDigdirKrrProxyUrl(), authService::getMachineTokenForTjeneste, authService::getAadOboTokenForTjeneste, authService);
+    public DigdirClient digdirClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
+        return new DigdirClientImpl(properties.getDigdirKrrProxyUrl(),
+                () -> tokenClient.createMachineToMachineToken(properties.getDigdirKrrProxyScope()));
     }
 
     @Bean
